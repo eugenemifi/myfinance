@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: myfinance
+  datasource:
+    url: jdbc:postgresql://localhost:5432/myfinance
+    username: postgres
+    password: postgres
+  flyway:
+    url: jdbc:postgresql://localhost:5432/myfinance
+    user: postgres
+    password: postgres
+    locations: classpath:/db/migration
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+server:
+  port: 8089
