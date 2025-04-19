@@ -2,25 +2,25 @@ package io.prozy.myfinance.rest;
 
 import io.prozy.myfinance.dto.*;
 import io.prozy.myfinance.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
+@RequiredArgsConstructor
 public class AuthRestControllerV1 {
 
-    @Autowired
-    private AuthService authService;
+  private final AuthService authService;
 
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto request) {
-        return ResponseEntity.ok(authService.login(request));
-    }
+  @PostMapping("/login")
+  public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
+    return ResponseEntity.ok(authService.login(request));
+  }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequestDto request) {
-        authService.register(request);
-        return ResponseEntity.ok("User registered successfully");
-    }
+  @PostMapping("/register")
+  public ResponseEntity<UserDto> register(@Valid @RequestBody RegisterRequestDto request) {
+    UserDto userDto = authService.register(request);
+    return ResponseEntity.ok(userDto);
+  }
 }

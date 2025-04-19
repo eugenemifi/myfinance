@@ -1,23 +1,11 @@
 package io.prozy.myfinance.dto;
 
-public class LoginRequestDto {
-    private String login;
-    private String password;
+import jakarta.validation.constraints.NotBlank;
 
-    public String getLogin() {
-        return login;
-    }
+public record LoginRequestDto(
+    @NotBlank(message = "Login is required")
+    String login,
 
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-}
-
+    @NotBlank(message = "Password is required")
+    String password
+) {}

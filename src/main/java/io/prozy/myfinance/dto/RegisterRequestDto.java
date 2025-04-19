@@ -1,51 +1,27 @@
 package io.prozy.myfinance.dto;
 
-public class RegisterRequestDto {
-  private String login;
-  private String password;
-  private String email;
-  private String firstName;
-  private String lastName;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-  public String getLogin() {
-    return login;
-  }
+public record RegisterRequestDto(
 
-  public void setLogin(String login) {
-    this.login = login;
-  }
+    @NotBlank(message = "Login is required")
+    @Size(min = 4, max = 50, message = "Login must be between 4 and 50 characters")
+    String login,
 
-  public String getPassword() {
-    return password;
-  }
+    @NotBlank(message = "Password is required")
+    @Size(min = 6, max = 100, message = "Password must be between 6 and 100 characters")
+    String password,
 
-  public void setPassword(String password) {
-    this.password = password;
-  }
+    @Size(max = 100, message = "First name must be at most 100 characters")
+    String firstName,
 
-  public String getEmail() {
-    return email;
-  }
+    @Size(max = 100, message = "Last name must be at most 100 characters")
+    String lastName,
 
-  public void setEmail(String email) {
-    this.email = email;
-  }
+    @Email(message = "Invalid email format")
+    @Size(max = 100, message = "Email must be at most 100 characters")
+    String email
 
-  public String getFirstName() {
-    return firstName;
-  }
-
-  public void setFirstName(String firstName) {
-    this.firstName = firstName;
-  }
-
-  public String getLastName() {
-    return lastName;
-  }
-
-  public void setLastName(String lastName) {
-    this.lastName = lastName;
-  }
-
-
-}
+) {}
