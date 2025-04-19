@@ -2,10 +2,13 @@ package io.prozy.myfinance.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record LoginRequestDto(
+import lombok.Data;
+
+@Data
+public class LoginRequestDto{
     @NotBlank(message = "Login is required")
-    String login,
+    private String login;
 
     @NotBlank(message = "Password is required")
-    String password
-) {}
+    private String password;
+}
