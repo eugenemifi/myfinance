@@ -19,19 +19,19 @@ import java.util.stream.Collectors;
 public class TransactionService {
 
   private final TransactionRepository transactionRepository;
-  private final UserMapper userMapper;  // Инжектируем UserMapper
-  private final TransactionTypeMapper transactionTypeMapper;  // Инжектируем TransactionTypeMapper
-  private final TransactionStatusMapper transactionStatusMapper;  // Инжектируем TransactionStatusMapper
-  private final CategoryMapper categoryMapper;  // Инжектируем CategoryMapper
-  private final BankMapper bankMapper;  // Инжектируем BankMapper
+  private final UserMapper userMapper;
+  private final TransactionTypeMapper transactionTypeMapper;
+  private final TransactionStatusMapper transactionStatusMapper;
+  private final CategoryMapper categoryMapper;
+  private final BankMapper bankMapper;
 
   @Autowired
-  public TransactionService(TransactionRepository transactionRepository, 
-                            UserMapper userMapper,
-                            TransactionTypeMapper transactionTypeMapper,
-                            TransactionStatusMapper transactionStatusMapper,
-                            CategoryMapper categoryMapper,
-                            BankMapper bankMapper) {
+  public TransactionService(TransactionRepository transactionRepository,
+      UserMapper userMapper,
+      TransactionTypeMapper transactionTypeMapper,
+      TransactionStatusMapper transactionStatusMapper,
+      CategoryMapper categoryMapper,
+      BankMapper bankMapper) {
     this.transactionRepository = transactionRepository;
     this.userMapper = userMapper;
     this.transactionTypeMapper = transactionTypeMapper;
@@ -40,23 +40,26 @@ public class TransactionService {
     this.bankMapper = bankMapper;
   }
 
-  public List<TransactionDto> getTransactions(Double minAmount, Double maxAmount, LocalDateTime startDate,
-                                              LocalDateTime endDate, String category) {
-    List<TransactionEntity> transactions = transactionRepository.findByFilters(minAmount, maxAmount, startDate, endDate,
-        category);
-
+  public List<TransactionDto> getTransactions(
+      Double minAmount,
+      Double maxAmount,
+      LocalDateTime startDate,
+      LocalDateTime endDate,
+      String category) {
+    List<TransactionEntity> transactions = transactionRepository.findByFilters(
+        minAmount, maxAmount, startDate, endDate, category);
     return transactions.stream()
         .map(transaction -> new TransactionDto(
             transaction.getId(),
-            userMapper.toDto(transaction.getUser()),  // Используем инжектированный userMapper
-            transactionTypeMapper.toDto(transaction.getTransactionType()),  // Используем инжектированный transactionTypeMapper
-            transactionStatusMapper.toDto(transaction.getTransactionStatus()),  // Используем инжектированный transactionStatusMapper
-            categoryMapper.toDto(transaction.getCategoryEntity()),  // Используем инжектированный categoryMapper
+            userMapper.toDto(transaction.getUser()),
+            transactionTypeMapper.toDto(transaction.getTransactionType()),
+            transactionStatusMapper.toDto(transaction.getTransactionStatus()),
+            categoryMapper.toDto(transaction.getCategoryEntity()),
             transaction.getTransactionDateTime(),
             transaction.getComment(),
             transaction.getAmount(),
-            bankMapper.toDto(transaction.getSenderBankEntity()),  // Используем инжектированный bankMapper
-            bankMapper.toDto(transaction.getRecipientBankEntity()),  // Используем инжектированный bankMapper
+            bankMapper.toDto(transaction.getSenderBankEntity()),
+            bankMapper.toDto(transaction.getRecipientBankEntity()),
             transaction.getRecipientInn(),
             transaction.getRecipientBankAccount(),
             transaction.getRecipientPhone(),
