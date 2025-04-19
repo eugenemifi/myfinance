@@ -2,12 +2,14 @@ package io.prozy.myfinance.service;
 
 import io.prozy.myfinance.dto.*;
 import io.prozy.myfinance.entity.UserEntity;
+import io.prozy.myfinance.mappers.UserMapper;
 import io.prozy.myfinance.repository.UserRepository;
 import io.prozy.myfinance.security.JwtService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
 
@@ -18,6 +20,7 @@ public class AuthService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
+  private final UserMapper userMapper;  // Инжектируем UserMapper
 
   public LoginResponseDto login(LoginRequestDto request) {
     UserEntity user = userRepository.findByLogin(request.getLogin())
@@ -42,7 +45,7 @@ public class AuthService {
   }
 
   @Transactional
-  public void register(RegisterRequestDto request) {
+  public UserDto register(RegisterRequestDto request) {
     Optional<UserEntity> existing = userRepository.findByLogin(request.getLogin());
     if (existing.isPresent()) {
       throw new RuntimeException("Login already taken");
@@ -57,5 +60,6 @@ public class AuthService {
     user.setUserRole("USER");
 
     userRepository.save(user);
+    return userMapper.toDto(user);  
   }
 }
