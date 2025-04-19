@@ -20,7 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     return org.springframework.security.core.userdetails.User
         .withUsername(user.getUsername())
         .password(user.getPassword())
-        .authorities("USER") // можно кастомизировать роли
+        .authorities("ROLE_" + user.getUserRole().toUpperCase())
         .build();
   }
 }

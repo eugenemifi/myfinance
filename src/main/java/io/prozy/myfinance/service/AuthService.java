@@ -12,52 +12,50 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
-    @Autowired
-    private UserRepository userRepository;
+  private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
+  private final JwtService jwtService;
 
-    @Autowired
-    private JwtService jwtService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    public LoginResponseDto login(LoginRequestDto request) {
-        UserEntity user = userRepository.findByLogin(request.getLogin())
-            .orElseThrow(() -> new RuntimeException("Invalid login"));
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-            throw new RuntimeException("Invalid password");
-        }
-
-        String token = jwtService.generateToken(
-                org.springframework.security.core.userdetails.User
-                        .withUsername(user.getLogin())
-                        .password(user.getPasswordHash())
-                        .authorities("USER")
-                        .build()
-        );
-
-        return new LoginResponseDto(token);
+  public LoginResponseDto login(LoginRequestDto request) {
+    UserEntity user = userRepository.findByLogin(request.getLogin())
+        .orElseThrow(() -> new RuntimeException("Invalid login"));
+    String rawPassword = request.getPassword();
+    if (rawPassword == null || !passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
+      throw new RuntimeException("Invalid password");
     }
 
-    @Transactional
-    public void register(RegisterRequestDto request) {
-        Optional<UserEntity> existing = userRepository.findByLogin(request.getLogin());
-        if (existing.isPresent()) {
-            throw new RuntimeException("Login already taken");
-        }
-
-        UserEntity user = new UserEntity();
-        user.setLogin(request.getLogin());
-        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        user.setEmail(request.getEmail());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setUserRole("USER");
-
-        userRepository.save(user);
+    if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+      throw new RuntimeException("Invalid password");
     }
+
+    String token = jwtService.generateToken(
+        org.springframework.security.core.userdetails.User
+            .withUsername(user.getLogin())
+            .password(user.getPasswordHash())
+            .authorities("USER")
+            .build());
+
+    return new LoginResponseDto(token);
+  }
+
+  @Transactional
+  public void register(RegisterRequestDto request) {
+    Optional<UserEntity> existing = userRepository.findByLogin(request.getLogin());
+    if (existing.isPresent()) {
+      throw new RuntimeException("Login already taken");
+    }
+
+    UserEntity user = new UserEntity();
+    user.setLogin(request.getLogin());
+    user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+    user.setEmail(request.getEmail());
+    user.setFirstName(request.getFirstName());
+    user.setLastName(request.getLastName());
+    user.setUserRole("USER");
+
+    userRepository.save(user);
+  }
 }
-
