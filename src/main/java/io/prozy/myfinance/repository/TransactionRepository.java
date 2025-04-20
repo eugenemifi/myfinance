@@ -8,9 +8,10 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Repository
-public interface TransactionRepository extends JpaRepository<TransactionEntity, Long> {
+public interface TransactionRepository extends JpaRepository<TransactionEntity, UUID> {
 
   @Query("SELECT t FROM TransactionEntity t WHERE " +
       "(:minAmount IS NULL OR t.amount >= :minAmount) AND " +
