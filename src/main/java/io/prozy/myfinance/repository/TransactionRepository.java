@@ -7,20 +7,22 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.math.BigDecimal;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<TransactionEntity, Long> {
 
-  @Query("SELECT t FROM TransactionEntity t WHERE " +
-      "(:minAmount IS NULL OR t.amount >= :minAmount) AND " +
-      "(:maxAmount IS NULL OR t.amount <= :maxAmount) AND " +
-      "(:startDate IS NULL OR :endDate IS NULL OR t.transactionDateTime BETWEEN :startDate AND :endDate) AND " +
-      "(:category IS NULL OR t.categoryEntity.categoryName = :category)")
-  List<TransactionEntity> findByFilters(
-      Double minAmount,
-      Double maxAmount,
-      LocalDateTime startDate,
-      LocalDateTime endDate,
-      String category);
+    @Query("""
+                  SELECT t FROM TransactionEntity t WHERE
+                  t.amount >= :minAmount AND 
+                  t.amount <= :maxAmount AND
+                  t.transactionDateTime >= :startDate AND 
+                  t.transactionDateTime <= :endDate AND
+                  t.categoryEntity.categoryName = :category
+            """)
+    List<TransactionEntity> findByFilters(
+            Double minAmount,
+            Double maxAmount,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            String category);
 }

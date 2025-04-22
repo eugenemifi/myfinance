@@ -1,8 +1,8 @@
 package io.prozy.myfinance.dto;
 
-import java.util.UUID;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record TransactionDto(
         UUID id,
@@ -18,8 +18,8 @@ public record TransactionDto(
         String recipientInn,
         String recipientBankAccount,
         String recipientPhone,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        Long createdAt,
+        Long updatedAt
 ) {
 }
 
