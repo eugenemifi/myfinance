@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import java.util.UUID;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record TransactionDto(
         UUID id,
@@ -28,8 +29,8 @@ public record TransactionDto(
                 message = "Номер телефона должен быть в формате +7XXXXXXXXXX, 7XXXXXXXXXX или 8XXXXXXXXXX"
         )
         String recipientPhone,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        Long createdAt,
+        Long updatedAt
 ) {
 }
 

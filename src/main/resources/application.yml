@@ -15,5 +15,5 @@ spring:
 server:
   port: 8089
 jwt:
-  secret: your_super_secret_key
+  secret: yourSecureLongRandomBase64EncodedKeyWithoutUnderScore
   expiration: 86400000 
