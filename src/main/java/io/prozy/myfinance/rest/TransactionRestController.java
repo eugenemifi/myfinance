@@ -4,10 +4,7 @@ import io.prozy.myfinance.dto.TransactionDto;
 import io.prozy.myfinance.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -39,6 +36,15 @@ public class TransactionRestController {
 
         if (Objects.nonNull(all)) {
             return ResponseEntity.ok(all);
+        }
+        return ResponseEntity.status(404).build();
+    }
+
+    @PostMapping("/")
+    public ResponseEntity<TransactionDto> addTransaction(@RequestBody TransactionDto transactionDto) {
+        TransactionDto dto = transactionService.addTransaction(transactionDto);
+        if (Objects.nonNull(dto)) {
+            return ResponseEntity.ok(dto);
         }
         return ResponseEntity.status(404).build();
     }
