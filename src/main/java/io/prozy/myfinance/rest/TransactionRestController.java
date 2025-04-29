@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/transactions")
@@ -40,9 +41,36 @@ public class TransactionRestController {
         return ResponseEntity.status(404).build();
     }
 
+    @GetMapping("{id}")
+    public ResponseEntity<TransactionDto> getById(@PathVariable("id") UUID uuid) {
+        TransactionDto dto = transactionService.getById(uuid);
+        if (Objects.nonNull(dto)) {
+            return ResponseEntity.ok(dto);
+        }
+        return ResponseEntity.status(404).build();
+    }
+
     @PostMapping("/")
     public ResponseEntity<TransactionDto> addTransaction(@RequestBody TransactionDto transactionDto) {
         TransactionDto dto = transactionService.addTransaction(transactionDto);
+        if (Objects.nonNull(dto)) {
+            return ResponseEntity.ok(dto);
+        }
+        return ResponseEntity.status(404).build();
+    }
+
+    @PutMapping("/")
+    public ResponseEntity<TransactionDto> updateTransaction(@RequestBody TransactionDto transactionDto) {
+        TransactionDto dto = transactionService.addTransaction(transactionDto);
+        if (Objects.nonNull(dto)) {
+            return ResponseEntity.ok(dto);
+        }
+        return ResponseEntity.status(404).build();
+    }
+    
+    @DeleteMapping("{id}")
+    public ResponseEntity<TransactionDto> deleteTransaction(@PathVariable("id") UUID uuid) {
+        TransactionDto dto = transactionService.deleteTransaction(uuid);
         if (Objects.nonNull(dto)) {
             return ResponseEntity.ok(dto);
         }

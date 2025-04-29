@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,5 +45,19 @@ public class TransactionService {
     public TransactionDto addTransaction(TransactionDto transactionDto) {
         TransactionEntity save = transactionRepository.save(transactionMapper.toEntity(transactionDto));
         return transactionMapper.toDto(save);
+    }
+
+    public TransactionDto deleteTransaction(UUID uuid) {
+        Optional<TransactionEntity> deleted = transactionRepository.findById(uuid);
+        if (deleted.isPresent()) {
+            transactionRepository.deleteById(uuid);
+            return transactionMapper.toDto(deleted.get());
+        }
+        return null;
+    }
+
+    public TransactionDto getById(UUID uuid) {
+        Optional<TransactionEntity> byId = transactionRepository.findById(uuid);
+        return byId.map(transactionMapper::toDto).orElse(null);
     }
 }
