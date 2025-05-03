@@ -3,9 +3,7 @@ package io.prozy.myfinance.dto;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-import java.util.UUID;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record TransactionDto(
@@ -14,7 +12,7 @@ public record TransactionDto(
         TransactionTypeDto transactionType,
         TransactionStatusDto transactionStatus,
         CategoryDto category,
-        LocalDateTime transactionDateTime,
+        Long transactionDateTime,
         String comment,
         BigDecimal amount,
         BankDto senderBank,
