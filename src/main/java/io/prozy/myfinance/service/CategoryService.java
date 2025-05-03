@@ -7,7 +7,9 @@ import io.prozy.myfinance.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,5 +22,10 @@ public class CategoryService {
         CategoryEntity categoryEntity = categoryRepository.findById(uuid)
                 .orElseThrow();
         return categoryMapper.toDto(categoryEntity);
+    }
+
+    public List<CategoryDto> getAll() {
+        List<CategoryEntity> categoryList = categoryRepository.findAll();
+        return categoryList.stream().map(categoryMapper::toDto).collect(Collectors.toList());
     }
 }

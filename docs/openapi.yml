@@ -1,0 +1,361 @@
+openapi: 3.0.3
+info:
+  title: Financial Monitoring & Reporting API
+  version: "1.0.0"
+  description: |
+   Prozy MyFinance OpenAPI spec
+servers:
+  - url: http://localhost:8089/api/v1
+    description: Local development server
+security:
+  - BearerAuth: [ ]
+tags:
+  - name: Auth
+  - name: Users
+  - name: Dictionaries
+  - name: Transactions
+  - name: Reports
+  - name: Logs
+paths:
+  /auth/login:
+    post:
+      tags: [ Auth ]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AuthRequest' }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+        '401': { $ref: '#/components/responses/UnauthorizedError' }
+  /users/search:
+    post:
+      tags: [ Users ]
+      summary: Search & list users
+      security: [ { BearerAuth: [ ] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserFilterRequest' }
+      responses:
+        '200':
+          description: Paged list of users
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PageUser' }
+  /users:
+    post:
+      tags: [ Users ]
+      summary: Create user
+      security: [ { BearerAuth: [ ] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserCreateRequest' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserDto' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+  /users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      tags: [ Users ]
+      summary: Get user by id
+      security: [ { BearerAuth: [ ] } ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserDto' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [ Users ]
+      summary: Update user
+      security: [ { BearerAuth: [ ] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserUpdateRequest' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserDto' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [ Users ]
+      summary: Delete user
+      security: [ { BearerAuth: [ ] } ]
+      responses:
+        '204': { description: Deleted }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /transactions/search:
+    post:
+      tags: [ Transactions ]
+      summary: Search & list transactions
+      security: [ { BearerAuth: [ ] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TransactionFilterRequest' }
+      responses:
+        '200':
+          description: Paged list of transactions
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PageTransaction' }
+  /transactions:
+    post:
+      tags: [ Transactions ]
+      summary: Create transaction
+      security: [ { BearerAuth: [ ] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TransactionCreateRequest' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TransactionDto' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+  /transactions/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      tags: [ Transactions ]
+      summary: Get transaction by id
+      security: [ { BearerAuth: [ ] } ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TransactionDto' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [ Transactions ]
+      summary: Update transaction
+      security: [ { BearerAuth: [ ] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TransactionUpdateRequest' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TransactionDto' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [ Transactions ]
+      summary: Soft‑delete transaction (set status to deleted)
+      security: [ { BearerAuth: [ ] } ]
+      responses:
+        '200':
+          description: Marked as deleted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TransactionDto' }
+        '404': { $ref: '#/components/responses/NotFound' }
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    BadRequest:
+      description: Invalid input
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    UnauthorizedError:
+      description: Authentication required
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+  schemas:
+    # ---------- Common Wrappers ----------
+    PageMetadata:
+      type: object
+      properties:
+        page: { type: integer }
+        size: { type: integer }
+        totalElements: { type: integer }
+        totalPages: { type: integer }
+    PageUser:
+      type: object
+      properties:
+        content:
+          type: array
+          items: { $ref: '#/components/schemas/UserDto' }
+        meta: { $ref: '#/components/schemas/PageMetadata' }
+    PageTransaction:
+      type: object
+      properties:
+        content:
+          type: array
+          items: { $ref: '#/components/schemas/TransactionDto' }
+        meta: { $ref: '#/components/schemas/PageMetadata' }
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp: { type: string, format: date-time }
+        status: { type: integer }
+        error: { type: string }
+        message: { type: string }
+        path: { type: string }
+    # ---------- Auth ----------
+    AuthRequest:
+      type: object
+      required: [ login, password ]
+      properties:
+        login: { type: string }
+        password: { type: string }
+    AuthResponse:
+      type: object
+      required: [ accessToken, refreshToken ]
+      properties:
+        accessToken: { type: string }
+        refreshToken: { type: string }
+        tokenType: { type: string, example: Bearer }
+    # ---------- DTOs ----------
+    BankDto:
+      type: object
+      required: [ bankId, bankName ]
+      properties:
+        bankId: { type: string, format: uuid }
+        bankName: { type: string }
+        bicCode: { type: string }
+    CategoryDto:
+      type: object
+      required: [ id, categoryName, categoryType ]
+      properties:
+        id: { type: string, format: uuid }
+        categoryName: { type: string }
+        categoryType: { type: string, enum: [ Доход, Расход ] }
+    TransactionStatusDto:
+      type: object
+      required: [ id, status ]
+      properties:
+        id: { type: string, format: uuid }
+        status: { type: string }
+    TransactionTypeDto:
+      type: object
+      required: [ id, name ]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+    UserTypeDto:
+      type: object
+      required: [ id, name ]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+    UserDto:
+      type: object
+      required: [ userId, login ]
+      properties:
+        userId: { type: string, format: uuid }
+        login: { type: string }
+        firstName: { type: string }
+        lastName: { type: string }
+        email: { type: string, format: email }
+        userRole: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    TransactionDto:
+      type: object
+      required: [ id, user, transactionType, transactionStatus, transactionDateTime, amount ]
+      properties:
+        id: { type: string, format: uuid }
+        user: { $ref: '#/components/schemas/UserDto' }
+        transactionType: { $ref: '#/components/schemas/TransactionTypeDto' }
+        transactionStatus: { $ref: '#/components/schemas/TransactionStatusDto' }
+        category: { $ref: '#/components/schemas/CategoryDto' }
+        transactionDateTime: { type: string, format: date-time }
+        comment: { type: string }
+        amount: { type: number, format: double }
+        senderBank: { $ref: '#/components/schemas/BankDto' }
+        recipientBank: { $ref: '#/components/schemas/BankDto' }
+        recipientInn: { type: string }
+        recipientBankAccount: { type: string }
+        recipientPhone: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    # ---------- Request DTOs ----------
+    TransactionCreateRequest:
+      allOf:
+        - $ref: '#/components/schemas/TransactionDto'
+      description: Same as TransactionDto but without id/createdAt/updatedAt (server filled)
+    TransactionUpdateRequest:
+      allOf:
+        - $ref: '#/components/schemas/TransactionDto'
+    UserCreateRequest:
+      allOf:
+        - $ref: '#/components/schemas/UserDto'
+        - type: object
+          required: [ password ]
+          properties:
+            password: { type: string }
+    UserUpdateRequest:
+      allOf:
+        - $ref: '#/components/schemas/UserDto'
+    # ---------- Filter DTOs ----------
+    TransactionFilterRequest:
+      type: object
+      properties:
+        senderBankId: { type: string, format: uuid }
+        recipientBankId: { type: string, format: uuid }
+        dateFrom: { type: string, format: date }
+        dateTo: { type: string, format: date }
+        statusId: { type: string, format: uuid }
+        inn: { type: string }
+        amountFrom: { type: number, format: double }
+        amountTo: { type: number, format: double }
+        transactionTypeId: { type: string, format: uuid }
+        categoryId: { type: string, format: uuid }
+        page: { type: integer, minimum: 0 }
+        size: { type: integer, minimum: 1 }
+    UserFilterRequest:
+      type: object
+      properties:
+        login: { type: string }
+        userRole: { type: string }
+        createdFrom: { type: string, format: date }
+        createdTo: { type: string, format: date }
+        page: { type: integer, minimum: 0 }
+        size: { type: integer, minimum: 1 }

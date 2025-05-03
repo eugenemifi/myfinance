@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -22,10 +23,20 @@ public class CategoryRestControllerV1 {
     @GetMapping("{id}")
     public ResponseEntity<?> getById(@PathVariable("id") UUID uuid) {
         CategoryDto item = categoryService.getById(uuid);
-        if(Objects.nonNull(item)) {
+        if (Objects.nonNull(item)) {
             return ResponseEntity.ok(item);
         }
 
+        return ResponseEntity.status(404).build();
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<?> getAll() {
+        List<CategoryDto> all = categoryService.getAll();
+
+        if (Objects.nonNull(all)) {
+            return ResponseEntity.ok(all);
+        }
         return ResponseEntity.status(404).build();
     }
 }
