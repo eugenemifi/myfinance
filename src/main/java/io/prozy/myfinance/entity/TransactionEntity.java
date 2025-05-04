@@ -42,8 +42,9 @@ public class TransactionEntity {
     @JoinColumn(name = "category_id")
     private CategoryEntity categoryEntity;
 
+    @Builder.Default
     @Column(name = "transaction_date_time", nullable = false)
-    private LocalDateTime transactionDateTime;
+    private LocalDateTime transactionDateTime = LocalDateTime.now();
 
     @Column(name = "comment")
     private String comment;
@@ -68,9 +69,11 @@ public class TransactionEntity {
     @Column(name = "recipient_phone", length = 20)
     private String recipientPhone;
 
+    @Builder.Default
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Builder.Default
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
 

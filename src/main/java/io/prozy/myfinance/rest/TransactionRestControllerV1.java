@@ -16,12 +16,12 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/transactions")
-public class TransactionRestController {
+public class TransactionRestControllerV1 {
 
     private final TransactionService transactionService;
 
     @Autowired
-    public TransactionRestController(TransactionService transactionService) {
+    public TransactionRestControllerV1(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
 

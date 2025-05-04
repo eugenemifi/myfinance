@@ -7,15 +7,20 @@ import io.prozy.myfinance.repository.TransactionRepository;
 import io.prozy.myfinance.mappers.TransactionMapper;
 import io.prozy.myfinance.repository.TransactionRepository;
 import io.prozy.myfinance.utils.DateConverterUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
@@ -26,31 +31,14 @@ public class TransactionService {
     private final BankMapper bankMapper;
     private final TransactionMapper transactionMapper;
 
-    @Autowired
-    public TransactionService(TransactionRepository transactionRepository,
-                              UserMapper userMapper,
-                              TransactionTypeMapper transactionTypeMapper,
-                              TransactionStatusMapper transactionStatusMapper,
-                              CategoryMapper categoryMapper,
-                              BankMapper bankMapper,
-                              TransactionMapper transactionMapper) {
-        this.transactionRepository = transactionRepository;
-        this.userMapper = userMapper;
-        this.transactionTypeMapper = transactionTypeMapper;
-        this.transactionStatusMapper = transactionStatusMapper;
-        this.categoryMapper = categoryMapper;
-        this.bankMapper = bankMapper;
-        this.transactionMapper = transactionMapper;
-    }
-
     public List<TransactionDto> getTransactions(
             Double minAmount,
             Double maxAmount,
-            LocalDateTime startDate,
-            LocalDateTime endDate,
+            Long startDate,
+            Long endDate,
             String category) {
         List<TransactionEntity> transactions = transactionRepository.findByFilters(
-                minAmount, maxAmount, startDate, endDate, category);
+                minAmount, maxAmount, fromEpochMilli(startDate), fromEpochMilli(endDate), category);
         return transactions.stream()
                 .map(transaction -> new TransactionDto(
                         transaction.getId(),
@@ -58,7 +46,7 @@ public class TransactionService {
                         transactionTypeMapper.toDto(transaction.getTransactionType()),
                         transactionStatusMapper.toDto(transaction.getTransactionStatus()),
                         categoryMapper.toDto(transaction.getCategoryEntity()),
-                        transaction.getTransactionDateTime(),
+                        dateTimeToUnix(transaction.getTransactionDateTime()),
                         transaction.getComment(),
                         transaction.getAmount(),
                         bankMapper.toDto(transaction.getSenderBankEntity()),
@@ -66,8 +54,8 @@ public class TransactionService {
                         transaction.getRecipientInn(),
                         transaction.getRecipientBankAccount(),
                         transaction.getRecipientPhone(),
-                        transaction.getCreatedAt(),
-                        transaction.getUpdatedAt()))
+                        dateTimeToUnix(transaction.getCreatedAt()),
+                        dateTimeToUnix(transaction.getUpdatedAt())))
                 .collect(Collectors.toList());
     }
 
@@ -92,5 +80,13 @@ public class TransactionService {
     public TransactionDto getById(UUID uuid) {
         Optional<TransactionEntity> byId = transactionRepository.findById(uuid);
         return byId.map(transactionMapper::toDto).orElse(null);
+    }
+
+    private Long dateTimeToUnix(LocalDateTime localDateTime) {
+        return localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+    }
+
+    private LocalDateTime fromEpochMilli(Long millis) {
+                return Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 }

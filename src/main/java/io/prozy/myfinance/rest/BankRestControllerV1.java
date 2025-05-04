@@ -3,6 +3,8 @@ package io.prozy.myfinance.rest;
 import io.prozy.myfinance.dto.BankDto;
 import io.prozy.myfinance.service.BankService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,13 +19,10 @@ import java.util.Objects;
 public class BankRestControllerV1 {
     private final BankService bankService;
 
-    @GetMapping("/")
-    public ResponseEntity<?> getAll() {
-        List<BankDto> all = bankService.getAll();
-
-        if (Objects.nonNull(all)) {
-            return ResponseEntity.ok(all);
-        }
-        return ResponseEntity.status(404).build();
+    @GetMapping
+    public ResponseEntity<Page<BankDto>> getAll(Pageable pageable) {
+        Page<BankDto> banks = bankService.getAllBanks(pageable);
+        return ResponseEntity.ok(banks);
     }
+
 }

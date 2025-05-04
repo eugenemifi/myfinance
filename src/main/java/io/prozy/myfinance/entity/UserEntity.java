@@ -42,9 +42,11 @@ public class UserEntity {
   @Column(name = "user_role", length = 50)
   private String userRole;
 
+  @Builder.Default
   @Column(name = "created_at")
   private LocalDateTime createdAt = LocalDateTime.now();
 
+  @Builder.Default
   @Column(name = "updated_at")
   private LocalDateTime updatedAt = LocalDateTime.now();
 }

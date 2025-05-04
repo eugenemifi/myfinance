@@ -36,7 +36,7 @@ public class DeveloperRepositoryTests {
     private static final String test_transactionType = "Оплата товара";
     private static final String test_transactionStatus = "Новая транзакция";
     private static final String test_categoryEntity = "Автомобиль";
-    private static final LocalDateTime test_transactionDateTime = LocalDateTime.of(2026, 1, 1, 12, 0);
+    private static final LocalDateTime test_transactionDateTime = LocalDateTime.of(2025, 1, 1, 12, 0);
     private static final String test_comment = "Покупка нового авто";
     private static final BigDecimal test_amount = BigDecimal.valueOf(1500.75);
     private static final String test_recipientInn = "123456";

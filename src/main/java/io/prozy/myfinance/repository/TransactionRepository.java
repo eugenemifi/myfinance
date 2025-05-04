@@ -15,12 +15,12 @@ import java.util.UUID;
 public interface TransactionRepository extends JpaRepository<TransactionEntity, UUID> {
 
     @Query("""
-                  SELECT t FROM TransactionEntity t WHERE
-                  t.amount >= :minAmount AND 
-                  t.amount <= :maxAmount AND
-                  t.transactionDateTime >= :startDate AND 
-                  t.transactionDateTime <= :endDate AND
-                  t.categoryEntity.categoryName = :category
+                SELECT t FROM TransactionEntity t
+                WHERE (:minAmount IS NULL OR t.amount >= :minAmount)
+                  AND (:maxAmount IS NULL OR t.amount <= :maxAmount)
+                  AND (:startDate IS NULL OR t.transactionDateTime >= :startDate)
+                  AND (:endDate IS NULL OR t.transactionDateTime <= :endDate)
+                  AND (:category IS NULL OR t.categoryEntity.categoryName = :category)
             """)
     List<TransactionEntity> findByFilters(
             Double minAmount,
@@ -28,4 +28,5 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
             LocalDateTime startDate,
             LocalDateTime endDate,
             String category);
+
 }

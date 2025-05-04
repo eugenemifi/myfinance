@@ -27,9 +27,9 @@ public class AuthService {
     private final UserMapper userMapper;  // Инжектируем UserMapper
 
     public LoginResponseDto login(LoginRequestDto request) {
-        UserEntity user = userRepository.findByLogin(request.getLogin())
+        UserEntity user = userRepository.findByLogin(request.login())
                 .orElseThrow(() -> new RuntimeException("Invalid login"));
-        String rawPassword = request.getPassword();
+        String rawPassword = request.password();
         if (rawPassword == null || !passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
             throw new RuntimeException("Invalid password");
         }
@@ -45,17 +45,17 @@ public class AuthService {
 
     @Transactional
     public UserDto register(RegisterRequestDto request) {
-        Optional<UserEntity> existing = userRepository.findByLogin(request.getLogin());
+        Optional<UserEntity> existing = userRepository.findByLogin(request.login());
         if (existing.isPresent()) {
             throw new RuntimeException("Login already taken");
         }
 
         UserEntity user = new UserEntity();
-        user.setLogin(request.getLogin());
-        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        user.setEmail(request.getEmail());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
+        user.setLogin(request.login());
+        user.setPasswordHash(passwordEncoder.encode(request.password()));
+        user.setEmail(request.email());
+        user.setFirstName(request.firstName());
+        user.setLastName(request.lastName());
         user.setUserRole("USER");
 
         userRepository.save(user);
