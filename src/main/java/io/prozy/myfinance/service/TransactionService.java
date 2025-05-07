@@ -11,10 +11,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -32,13 +34,15 @@ public class TransactionService {
     private final TransactionMapper transactionMapper;
 
     public List<TransactionDto> getTransactions(
-            Double minAmount,
-            Double maxAmount,
+            BigDecimal minAmount,
+            BigDecimal maxAmount,
             Long startDate,
             Long endDate,
-            String category) {
+            String category
+    ) {
+
         List<TransactionEntity> transactions = transactionRepository.findByFilters(
-                minAmount, maxAmount, fromEpochMilli(startDate), fromEpochMilli(endDate), category);
+               minAmount, maxAmount, fromEpochMilli(startDate), fromEpochMilli(endDate), category);
         return transactions.stream()
                 .map(transaction -> new TransactionDto(
                         transaction.getId(),
@@ -64,6 +68,10 @@ public class TransactionService {
     }
 
     public TransactionDto addTransaction(TransactionDto transactionDto) {
+        if (transactionDto.transactionStatus().status().equalsIgnoreCase("NEW")) {
+            throw new IllegalArgumentException("Only transaction in status NEW could be updated");
+        }
+
         TransactionEntity save = transactionRepository.save(transactionMapper.toEntity(transactionDto));
         return transactionMapper.toDto(save);
     }
@@ -87,6 +95,9 @@ public class TransactionService {
     }
 
     private LocalDateTime fromEpochMilli(Long millis) {
-                return Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        if (Objects.isNull(millis)) {
+            return null;
+        }
+        return Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 }
