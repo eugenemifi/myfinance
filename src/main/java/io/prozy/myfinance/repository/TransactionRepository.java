@@ -16,17 +16,19 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
 
     @Query("""
                 SELECT t FROM TransactionEntity t
-                WHERE (:minAmount IS NULL OR t.amount >= :minAmount)
-                  AND (:maxAmount IS NULL OR t.amount <= :maxAmount)
-                  AND (:startDate IS NULL OR t.transactionDateTime >= :startDate)
-                  AND (:endDate IS NULL OR t.transactionDateTime <= :endDate)
-                  AND (:category IS NULL OR t.categoryEntity.categoryName = :category)
+                JOIN t.categoryEntity c
+                WHERE (t.amount >= COALESCE(:minAmount, t.amount))
+                  AND (t.amount <= COALESCE(:maxAmount, t.amount))
+                  AND (t.transactionDateTime >= COALESCE(:startDate, t.transactionDateTime))
+                  AND (t.transactionDateTime <= COALESCE(:endDate, t.transactionDateTime))
+                  AND (c.categoryName = COALESCE(:category, c.categoryName))
             """)
     List<TransactionEntity> findByFilters(
-            Double minAmount,
-            Double maxAmount,
-            LocalDateTime startDate,
-            LocalDateTime endDate,
-            String category);
+            @org.springframework.data.repository.query.Param("minAmount") BigDecimal minAmount,
+            @org.springframework.data.repository.query.Param("maxAmount") BigDecimal maxAmount,
+            @org.springframework.data.repository.query.Param("startDate") LocalDateTime startDate,
+            @org.springframework.data.repository.query.Param("endDate") LocalDateTime endDate,
+            @org.springframework.data.repository.query.Param("category") String category
+    );
 
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -27,8 +28,8 @@ public class TransactionRestControllerV1 {
 
     @GetMapping("/search")
     public List<TransactionDto> searchTransactions(
-            @RequestParam(required = false) Double minAmount,
-            @RequestParam(required = false) Double maxAmount,
+            @RequestParam(required = false) BigDecimal minAmount,
+            @RequestParam(required = false) BigDecimal maxAmount,
             @RequestParam(required = false) Long startDate,
             @RequestParam(required = false) Long endDate,
             @RequestParam(required = false) String category) {

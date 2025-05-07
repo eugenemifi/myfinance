@@ -884,8 +884,8 @@ public class DeveloperRepositoryTests {
 
         // When
         List<TransactionEntity> results = transactionRepository.findByFilters(
-                1000.0,
-                2000.0,
+                new BigDecimal("1000.0"),
+                new BigDecimal("2000.0"),
                 null,
                 null,
                 null
