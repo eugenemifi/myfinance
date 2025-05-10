@@ -162,3 +162,14 @@ stop
 ```http
 Authorization: Bearer <jwt-token>
 ```
+
+## Системные логи:
+
+```text
+2025-05-10 14:25:10.785  INFO 85432 --- [nio-8089-exec-5] o.s.web.servlet.DispatcherServlet       : Completed initialization in 12 ms
+2025-05-10 14:25:11.143  INFO 85432 --- [nio-8089-exec-8] i.p.m.security.JwtAuthenticationFilter  : Token validated for user: user@example.com
+2025-05-10 14:25:11.144  INFO 85432 --- [nio-8089-exec-8] i.p.m.rest.TransactionRestControllerV1  : Received POST /api/v1/transactions with payload: {amount: 1000}
+2025-05-10 14:25:11.311  INFO 85432 --- [nio-8089-exec-8] i.p.m.service.TransactionService        : Transaction saved: id=82ab-01df...
+2025-05-10 14:25:11.311  INFO 85432 --- [nio-8089-exec-8] i.p.m.repository.AuditTransactionRepo   : Audit INSERT entry created for transaction 82ab-01df...
+2025-05-10 14:25:11.312  INFO 85432 --- [nio-8089-exec-8] o.s.web.servlet.DispatcherServlet       : Completed 200 OK in 170ms
+```
