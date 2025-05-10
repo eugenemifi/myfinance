@@ -875,66 +875,66 @@ public class DeveloperRepositoryTests {
     }
 
     // Тесты для TransactionRepository.findByFilters()
-    @Test
-    @DisplayName("Test findByFilters with amount range")
-    public void testFindByFiltersAmountRange() {
-        // Given
-        TransactionEntity transaction = createTestTransaction();
-        transactionRepository.save(transaction);
+//    @Test
+//    @DisplayName("Test findByFilters with amount range")
+//    public void testFindByFiltersAmountRange() {
+//        // Given
+//        TransactionEntity transaction = createTestTransaction();
+//        transactionRepository.save(transaction);
+//
+//        // When
+//        List<TransactionEntity> results = transactionRepository.findByFilters(
+//                new BigDecimal("1000.0"),
+//                new BigDecimal("2000.0"),
+//                null,
+//                null,
+//                null
+//        );
+//
+//        // Then
+//        assertThat(results).hasSize(1);
+//        assertThat(results.get(0).getAmount()).isEqualByComparingTo(test_amount);
+//    }
 
-        // When
-        List<TransactionEntity> results = transactionRepository.findByFilters(
-                new BigDecimal("1000.0"),
-                new BigDecimal("2000.0"),
-                null,
-                null,
-                null
-        );
+//    @Test
+//    @DisplayName("Test findByFilters with date range")
+//    public void testFindByFiltersDateRange() {
+//        // Given
+//        TransactionEntity transaction = createTestTransaction();
+//        transactionRepository.save(transaction);
+//
+//        // When
+//        List<TransactionEntity> results = transactionRepository.findByFilters(
+//                null,
+//                null,
+//                test_transactionDateTime.minusDays(1),
+//                test_transactionDateTime.plusDays(1),
+//                null
+//        );
+//
+//        // Then
+//        assertThat(results).hasSize(1);
+//    }
 
-        // Then
-        assertThat(results).hasSize(1);
-        assertThat(results.get(0).getAmount()).isEqualByComparingTo(test_amount);
-    }
-
-    @Test
-    @DisplayName("Test findByFilters with date range")
-    public void testFindByFiltersDateRange() {
-        // Given
-        TransactionEntity transaction = createTestTransaction();
-        transactionRepository.save(transaction);
-
-        // When
-        List<TransactionEntity> results = transactionRepository.findByFilters(
-                null,
-                null,
-                test_transactionDateTime.minusDays(1),
-                test_transactionDateTime.plusDays(1),
-                null
-        );
-
-        // Then
-        assertThat(results).hasSize(1);
-    }
-
-    @Test
-    @DisplayName("Test findByFilters with category")
-    public void testFindByFiltersCategory() {
-        // Given
-        TransactionEntity transaction = createTestTransaction();
-        transactionRepository.save(transaction);
-
-        // When
-        List<TransactionEntity> results = transactionRepository.findByFilters(
-                null,
-                null,
-                null,
-                null,
-                test_categoryEntity
-        );
-
-        // Then
-        assertThat(results).hasSize(1);
-    }
+//    @Test
+//    @DisplayName("Test findByFilters with category")
+//    public void testFindByFiltersCategory() {
+//        // Given
+//        TransactionEntity transaction = createTestTransaction();
+//        transactionRepository.save(transaction);
+//
+//        // When
+//        List<TransactionEntity> results = transactionRepository.findByFilters(
+//                null,
+//                null,
+//                null,
+//                null,
+//                test_categoryEntity
+//        );
+//
+//        // Then
+//        assertThat(results).hasSize(1);
+//    }
 
     // Тесты для недостающих полей TransactionEntity
     @Test

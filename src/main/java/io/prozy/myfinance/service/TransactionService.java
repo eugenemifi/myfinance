@@ -38,11 +38,17 @@ public class TransactionService {
             BigDecimal maxAmount,
             Long startDate,
             Long endDate,
-            String category
+            UUID category,
+            UUID senderId,
+            UUID recipientId,
+            UUID transStatus,
+            UUID transType,
+            String recipientInn
     ) {
 
         List<TransactionEntity> transactions = transactionRepository.findByFilters(
-               minAmount, maxAmount, fromEpochMilli(startDate), fromEpochMilli(endDate), category);
+               minAmount, maxAmount, fromEpochMilli(startDate), fromEpochMilli(endDate), category, senderId, recipientId,
+                transStatus, transType, recipientInn);
         return transactions.stream()
                 .map(transaction -> new TransactionDto(
                         transaction.getId(),
@@ -67,9 +73,12 @@ public class TransactionService {
         return transactionRepository.findAll().stream().map(transactionMapper::toDto).collect(Collectors.toList());
     }
 
-    public TransactionDto addTransaction(TransactionDto transactionDto) {
-        if (transactionDto.transactionStatus().status().equalsIgnoreCase("NEW")) {
-            throw new IllegalArgumentException("Only transaction in status NEW could be updated");
+    public TransactionDto addTransaction(TransactionDto transactionDto) throws IllegalArgumentException {
+        if (!Objects.isNull(transactionDto.id())) {
+            TransactionDto exists = getById(transactionDto.id());
+            if (!exists.transactionStatus().status().equalsIgnoreCase("NEW")) {
+                throw new IllegalArgumentException("Only transaction in status NEW could be updated");
+            }
         }
 
         TransactionEntity save = transactionRepository.save(transactionMapper.toEntity(transactionDto));
