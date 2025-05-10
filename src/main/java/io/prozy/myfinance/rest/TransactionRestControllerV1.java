@@ -28,12 +28,18 @@ public class TransactionRestControllerV1 {
 
     @GetMapping("/search")
     public List<TransactionDto> searchTransactions(
+            @RequestParam(required = false) UUID senderId,
+            @RequestParam(required = false) UUID recipientId,
+            @RequestParam(required = false) UUID transStatus,
+            @RequestParam(required = false) UUID transType,
+            @RequestParam(required = false) String recipientInn,
             @RequestParam(required = false) BigDecimal minAmount,
             @RequestParam(required = false) BigDecimal maxAmount,
             @RequestParam(required = false) Long startDate,
             @RequestParam(required = false) Long endDate,
-            @RequestParam(required = false) String category) {
-        return transactionService.getTransactions(minAmount, maxAmount, startDate, endDate, category);
+            @RequestParam(required = false) UUID category) {
+        return transactionService.getTransactions(minAmount, maxAmount, startDate, endDate, category, senderId,
+                recipientId, transStatus, transType, recipientInn);
     }
 
     @GetMapping("/")

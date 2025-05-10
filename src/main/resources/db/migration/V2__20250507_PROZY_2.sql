@@ -1,2 +1,2 @@
-INSERT INTO transaction_types(name)
+INSERT INTO transaction_statuses(status)
 VALUES ('REFUND');
