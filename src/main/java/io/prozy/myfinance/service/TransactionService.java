@@ -68,8 +68,8 @@ public class TransactionService {
     }
 
     public TransactionDto addTransaction(TransactionDto transactionDto) {
-        if (transactionDto.transactionStatus().status().equalsIgnoreCase("NEW")) {
-            throw new IllegalArgumentException("Only transaction in status NEW could be updated");
+        if (!transactionDto.transactionStatus().status().equalsIgnoreCase("NEW")) {
+            throw new IllegalArgumentException("Only transactions with status NEW can be added");
         }
 
         TransactionEntity save = transactionRepository.save(transactionMapper.toEntity(transactionDto));

@@ -5,6 +5,7 @@ import io.prozy.myfinance.entity.*;
 import io.prozy.myfinance.mappers.*;
 import io.prozy.myfinance.repository.*;
 import io.prozy.myfinance.security.JwtService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -179,11 +180,16 @@ public class DeveloperServiceImplTests {
     }
 
     private TransactionDto createTransactionDto(TransactionEntity transactionEntity) {
+        TransactionStatusDto statusDto = new TransactionStatusDto(
+                transactionEntity.getTransactionStatus().getId(),
+                transactionEntity.getTransactionStatus().getStatus()
+        );
+
         return new TransactionDto(
                 transactionEntity.getId(),
                 userMapper.toDto(transactionEntity.getUser()),
                 transactionTypeMapper.toDto(transactionEntity.getTransactionType()),
-                transactionStatusMapper.toDto(transactionEntity.getTransactionStatus()),
+                statusDto,
                 categoryMapper.toDto(transactionEntity.getCategoryEntity()),
                 transactionEntity.getTransactionDateTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
                 transactionEntity.getComment(),
@@ -215,7 +221,7 @@ public class DeveloperServiceImplTests {
     private TransactionStatusEntity createTransactionStatusEntity() {
         return TransactionStatusEntity.builder()
                 .id(UUID.randomUUID())
-                .status("Test Status")
+                .status("NEW")
                 .build();
     }
 
@@ -320,7 +326,7 @@ public class DeveloperServiceImplTests {
     }
 
     @Test
-    @DisplayName("Test register with taken login")
+    @DisplayName("Test register with taken login throws exception")
     public void givenTakenLoginRegisterRequest_whenRegister_thenThrowException() {
         // given
         RegisterRequestDto request = createRegisterRequestDto();
@@ -760,7 +766,7 @@ public class DeveloperServiceImplTests {
         Mockito.when(transactionMapper.toDto(transactionEntity)).thenReturn(expectedTransactionDto);
 
         // when
-        TransactionDto actualTransactionDto = transactionService.addTransaction(transactionDto); // Assuming addTransaction is used for update as well
+        TransactionDto actualTransactionDto = transactionService.addTransaction(transactionDto);
 
         // then
         assertThat(actualTransactionDto).isNotNull();
@@ -810,6 +816,69 @@ public class DeveloperServiceImplTests {
 
         assertEquals(null, transactionDto);
         verify(transactionRepository, times(1)).findById(uuid);
+    }
+
+    @Test
+    @DisplayName("Test addTransaction with status NEW should succeed")
+    public void givenTransactionDtoWithNewStatus_whenAddTransaction_thenReturnTransactionDto() {
+        // given
+        TransactionEntity entity = createTransactionEntity();
+        TransactionDto dto = createTransactionDto(entity);
+
+        when(transactionMapper.toEntity(dto)).thenReturn(entity);
+        when(transactionRepository.save(entity)).thenReturn(entity);
+        when(transactionMapper.toDto(entity)).thenReturn(dto);
+
+        // when
+        TransactionDto result = transactionService.addTransaction(dto);
+
+        // then
+        assertNotNull(result);
+        verify(transactionRepository).save(entity);
+    }
+
+    @Test
+    @DisplayName("Test addTransaction with non-NEW status throws exception")
+    public void givenTransactionDtoWithNonNewStatus_whenAddTransaction_thenThrowException() {
+        // given
+        TransactionStatusEntity statusEntity = createTransactionStatusEntity();
+        statusEntity.setStatus("PROCESSING");
+        TransactionEntity transactionEntity = createTransactionEntity();
+        transactionEntity.setTransactionStatus(statusEntity);
+
+        TransactionDto transactionDto = createTransactionDto(transactionEntity);
+
+        // when
+        assertThrows(IllegalArgumentException.class,
+                () -> transactionService.addTransaction(transactionDto));
+
+        // then
+        verify(transactionRepository, never()).save(any());
+        verify(transactionMapper, never()).toEntity(any());
+    }
+
+    @Test
+    @DisplayName("Test getTransactions handles date conversions correctly")
+    public void givenDateParameters_whenGetTransactions_thenConvertCorrectly() {
+        // given
+        Long startDate = 1622505600000L;
+        Long endDate = 1625097600000L;
+
+        // Используем any() для параметров которые не проверяем
+        Mockito.lenient().when(transactionRepository.findByFilters(
+                any(),
+                any(),
+                any(LocalDateTime.class),
+                any(LocalDateTime.class),
+                any()
+        )).thenReturn(List.of(createTransactionEntity()));
+
+        // when
+        List<TransactionDto> result = transactionService.getTransactions(
+                null, null, startDate, endDate, null);
+
+        // then
+        assertFalse(result.isEmpty());
     }
 
     // TransactionStatusesService tests

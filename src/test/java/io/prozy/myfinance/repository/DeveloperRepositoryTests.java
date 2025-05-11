@@ -379,6 +379,16 @@ public class DeveloperRepositoryTests {
     }
 
     @Test
+    @DisplayName("Test transaction without category")
+    public void testTransactionWithoutCategory() {
+        TransactionEntity transaction = createTestTransaction();
+        transaction.setCategoryEntity(null); // Убираем категорию
+        TransactionEntity saved = transactionRepository.save(transaction);
+
+        assertThat(saved.getCategoryEntity()).isNull();
+    }
+
+    @Test
     @DisplayName("Test save three transactions")
     public void testSaveThreeTransactions() {
         // Given
@@ -762,6 +772,25 @@ public class DeveloperRepositoryTests {
 
         // Then
         assertThat(userRepository.findById(savedUser.getUserId())).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Test all user fields on save")
+    public void testUserFieldsOnSave() {
+        UserEntity savedUser = userRepository.save(UserEntity.builder()
+                .login(test_login)
+                .passwordHash(test_passwordHash)
+                .firstName(test_firstName)
+                .lastName(test_lastName)
+                .email(test_email)
+                .userRole(test_userRole)
+                .createdAt(test_createdAt_UserRepository)
+                .updatedAt(test_updatedAt_UserRepository)
+                .build());
+
+        assertThat(savedUser.getEmail()).isEqualTo(test_email);
+        assertThat(savedUser.getUserRole()).isEqualTo(test_userRole);
+        assertThat(savedUser.getCreatedAt()).isNotNull();
     }
 
     // Тесты для UserTypeRepository
